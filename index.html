@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en"> <!--data-bs-theme="dark"-->
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Unofficial Pokemon API </title>
+    <link rel="stylesheet" href="./assets/bootstrapV5.3/bootstrap-5.3.0-alpha3-dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="./assets/css-spinner/dist/entries/dual-ring/index.min.css">
+    <link rel="stylesheet" href="./assets/img/types/style.css">
+</head>
+
+<body>
+
+    <!-- <div class="lds-dual-ring"></div> -->
+
+    <!--  -->
+    <!-- Dynamic search -->
+    <!--  -->
+    <div name="poke-search" class="section-page poke-search justify-content-center container-md mt-5">
+        <!-- Form -->
+        <form class="poke-search-form p-5 row justify-content-center border-0 border-opacity-75 rounded-4 
+            shadow bg-body-tertiary rounded" id="poke-search-form">
+
+            <!-- Title -->
+            <div class="card border-0 mb-4 text-center bg-primary bg-opacity-75 text-white">
+                <div class="card-header form-title fs-4 shadow-sm rounded ">
+                    <h2>Busqueda Pokemon</h2>
+                </div>
+            </div>
+            <!-- Name -->
+            <p class="text-center pt-3">
+                Busqueda básica
+            </p>
+            <div class="row justify-content-center">
+                <div class="col-12 col-xl-4 col-md-6 mt-1">
+                    <label for="poke-name" class="form-label">Nombre del Pokemon</label>
+                    <div class="mb-3 input-group">
+                        <object data="../assets/img/pika.svg" width="35" height="30"></object>
+                        <input type="text" class="form-control" id="poke-name" name="poke-name" placeholder="Nombre"
+                            aria-describedby="name-span">
+                    </div>
+                </div>
+                <div class="col-12 col-xl-4 col-md-6 mt-1">
+                    <label for="poke-id" class="form-label">ID en Pokedex</label>
+                    <div class="mb-3 input-group">
+                        <object data="../assets/img/pika.svg" width="35" height="30"></object>
+                        <input type="text" class="form-control" id="poke-id" name="poke-id" placeholder="ID"
+                            aria-describedby="name-span">
+                    </div>
+                </div>
+            </div>
+            <div class="col-12">
+                <div class="mb-3 d-flex justify-content-center">
+                    <button class="btn btn-primary shadow" id="search-btn" name="search-btn">Buscar</button>
+                </div>
+            </div>
+            <p class="text-center pt-3">
+                Busqueda avanzada
+            </p>
+            <!-- Genre -->
+            <!-- <div class="row justify-content-center">
+                <div class="col-12 col-xl-4 col-md-6 mt-1">
+                    <label class="form-label" for="poke-type">Tipo de pokemon</label>
+                    <div class="input-group mb-3">
+                        <object data="../assets/img/gear.svg" width="35" height="30"></object>
+                        <select class="form-select" id="poke-type" name="poke-type">
+                            <option selected>Tipo...</option>
+                        </select>
+                    </div>
+                </div>-->
+                <!-- Rol --><!--
+                <div class="col-12 col-xl-4 col-md-6 mt-1">
+                    <label class="form-label" for="poke-gen">Generación</label>
+                    <div class="input-group mb-3">
+                        <object data="../assets/img/gear.svg" width="35" height="30"></object>
+                        <select class="form-select" id="poke-gen">
+                            <option selected>Generación...</option>
+                        </select>
+
+                    </div>
+                </div>
+            </div> -->
+
+        
+            <div class="col-12">
+                <div class="mb-3 d-flex justify-content-center">
+                    <button class="btn btn-primary shadow" id="advanced-search-btn">Busqueda Avanzada</button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+
+
+    <!--  -->
+    <!-- Search Result -->
+    <!--  -->
+    <div name="pokedex-result" class="section-page container-lg text-center justify-content-center mt-5 p-3">
+        <div
+            class="poke-search-form p-5 row justify-content-center border-0 border-opacity-75 rounded-4 shadow bg-body-tertiary rounded">
+            <div class="p-2 border-0 border-opacity-75 rounded-3 shadow rounded bg-danger text-white">
+                <h2 class="">Pokedex</h2>
+            </div>
+            <div class="justify-content-center row mt-5">
+                <div class="col-10 container text-center mt-5">
+                    <div class="col row" id="pokedex-result-container">
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="./js/app.js" type="module"></script>
+    <script src="./js/var.js" type="module"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios@1.1.2/dist/axios.min.js"></script>
+</body>
+
+</html>
