@@ -3,18 +3,18 @@ import { api, resultCont } from '../js/var.js';
 import capitalize from '../helpers/capitalize.js';
 import clearHTML from '../helpers/clearHTML.js'
 
-export { searchPokemon, getOptData, loadPokemons, nextPage }
+export { searchPokemon, getOptData, loadPokemons, nextPage, getData }
 
 
 // Optiene los datos del pokemon buscado (parametro endpoint que recibe alguna consulta de la api)
-async function getData(endpoint = "pokemon/?offset=0&limit=20", pokeapi = true){
+async function getData(endpoint){
     try{
-        if (pokeapi){
-            const response = await fetch(api + endpoint );
+        if (!endpoint){
+            const response = await fetch("https://pokeapi.co/api/v2/pokemon/?offset=0&limit=50");
             const result = await response.json()
             return result
         };
-        const response = await fetch(endpoint );
+        const response = await fetch(endpoint);
         const result = await response.json()
         return result
     } catch {
@@ -37,20 +37,16 @@ async function getOptData(select, endpoint) {
 async function loadCards(pokeArray = []){
     // Iteramos sobre los datos del json
     for(let pokemon of pokeArray.results){
-        const info = await getData(pokemon.url, false);
+        const info = await getData(pokemon.url);
         createSingleCard(info)
     }
 };
 
 // Función que crea una sola tarjeta de personaje
 function createSingleCard(data = {}){
-    const name = data.name;
-    const id = data.id;
-    const height = data.height;
+    const {name, id, height, types, weight} = data;
     const imgDef = data.sprites.other['official-artwork'].front_default;
     const imgShiny = data.sprites.other['official-artwork'].front_shiny;
-    const types = data.types;
-    const weight = data.weight;
 
     const charContainer = document.createElement('div');
     charContainer.classList.add('col', 'mt-3');
@@ -111,15 +107,15 @@ async function loadPokemons(endpoint){
     let pokemons;
     try{
         if(endpoint){
-            pokemons = await getData(endpoint, pokeapi = false);
+            pokemons = await getData(endpoint);
             loadCards(pokemons);
         } else{
             pokemons = await getData();
             loadCards(pokemons);
-        }
+        };
     } catch {
-        console.log("No es posible cargar la pagina, contacte a soporte")
-    }
+        console.error("No es posible cargar la pagina, contacte a soporte")
+    };
 
     return pokemons;
 }
@@ -137,7 +133,7 @@ async function searchPokemon(inputValue) {
         pokemonData = await getData();
     } else{
         pokemon = inputValue;
-        pokemonData = getData(`pokemon/${pokemon}`);
+        pokemonData = getData(api + `pokemon/${pokemon}`);
     }
 
     try{
@@ -168,6 +164,11 @@ async function nextPage(consult){
     const nextPage = currentPage.next;
     return nextPage;
 };
+
+let prueba;
+
+// prueba = loadPokemons("https://pokeapi.co/api/v2/pokemon/?offset=20&limit=20");
+// console.log(prueba);
 
 
 // async function loadPokemons(currentPage){

@@ -1,10 +1,11 @@
-import { searchPokemon, getOptData, loadPokemons } from "../js/fun.js"
+import { searchPokemon, getOptData, loadPokemons, getData } from "../js/fun.js"
 import { searchForm, resultCont, showMoreBtn } from "../js/var.js"
 import clearHTML from '../helpers/clearHTML.js';
 
 let pokemons;
 let nextPage;
 
+// Event Listener que carga los poquemones al iniciar la pagina
 document.addEventListener('DOMContentLoaded', async () => {
     // getOptData(searchForm[5], 'type');
     // getOptData(searchForm[7], 'generation'); // generation ix doesn't work
@@ -13,23 +14,21 @@ document.addEventListener('DOMContentLoaded', async () => {
     clearHTML(selector);
     pokemons = await loadPokemons();
     nextPage = pokemons.next;
-
 });
 
-searchForm.elements["search-btn"].addEventListener('click', (e) => {
-    e.preventDefault();
-    const pokemon = searchForm.elements["poke-name"].value;
-    pokemon ? searchPokemon(pokemon) : console.error('Ingrese un nombre de pokemon valido');
-});
-
+// Event Listener que escucha al boton mostrar màs para mostrar màs pokemons
 showMoreBtn.addEventListener('click', async (e) => {
     e.preventDefault();
-    console.log(pokemons);
-    console.log(nextPage);
     pokemons = await loadPokemons(nextPage);
     nextPage = pokemons.next;
+    console.log(pokemons);
 });
 
+// searchForm.elements["search-btn"].addEventListener('click', (e) => {
+//     e.preventDefault();
+//     const pokemon = searchForm.elements["poke-name"].value;
+//     pokemon ? searchPokemon(pokemon) : console.error('Ingrese un nombre de pokemon valido');
+// });
 
 
 
