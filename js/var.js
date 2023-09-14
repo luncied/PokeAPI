@@ -3,5 +3,6 @@ export const api = 'https://pokeapi.co/api/v2/';
 // export const searchForm = document.getElementById('poke-search-form');
 export const searchForm = document.querySelector('#poke-search-form');
 export const resultCont = document.querySelector('#pokedex-result-container');
+export const showMoreBtn = document.querySelector('#show-more-btn');
 
 // console.log(searchForm[1]);

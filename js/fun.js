@@ -1,86 +1,45 @@
 // import axios from 'axios';
 import { api, resultCont } from '../js/var.js';
-export { searchPokemon, getOptData }
+import capitalize from '../helpers/capitalize.js';
+import clearHTML from '../helpers/clearHTML.js'
+
+export { searchPokemon, getOptData, loadPokemons, nextPage }
+
 
 // Optiene los datos del pokemon buscado (parametro endpoint que recibe alguna consulta de la api)
-function getData(endpoint = "pokemon/?offset=0&limit=1041", pokeapi = true){
-    if (pokeapi){
-        const config = {
-            method: 'get',
-            url: api + endpoint,
-            headers: {}
+async function getData(endpoint = "pokemon/?offset=0&limit=20", pokeapi = true){
+    try{
+        if (pokeapi){
+            const response = await fetch(api + endpoint );
+            const result = await response.json()
+            return result
         };
-        return axios(config)
-    };
-    const config = {
-        method: 'get',
-        url: endpoint,
-        headers: {}
-    };
-    return axios(config)
+        const response = await fetch(endpoint );
+        const result = await response.json()
+        return result
+    } catch {
+        console.error("Error al obtener los datos de la api")
+    }
 
 };
 
 // Obtiene los datos para generar las opciones en los selects
-function getOptData(select, endpoint) {
+async function getOptData(select, endpoint) {
     const selectCont = select ; // elemento del contenedor formulario
-    const config = {
-        method: 'get',
-        url: api + endpoint,
-        headers: {}
-    };
-    axios(config)
-        .then(result => {
-            const optArray = result.data.results;
-            addOptions(optArray, selectCont);
-        });
+
+    const response = await fetch(api + endpoint);
+    const result = await response.json();
+    const optArray = result.results;
+    addOptions(optArray, selectCont);
 };
 
-// Obtiene los datos del pokemon buscado en la sección de Nombre del Pokemon
-// Meter async await
-function searchPokemon(inputValue) {
-    let pokemon;
-    let pokemonData ;
-
-    if(!inputValue){
-        pokemonData = getData()
-    }else{
-        pokemon = inputValue
-        pokemonData = getData(`pokemon/${pokemon}`)
-    }
-
-    pokemonData
-        // .then(result => console.log(result.data)) // Aqui va la funcion LOADCARDS()
-        .then(result => {
-            console.log(result.data.results)
-            console.log(result.data.results.keys());
-
-            loadCards(result)
-        }) 
-        .catch(error => error)
-    
-}
-
-
 // Funcion para cargar las tarjetas 
-function loadCards(pokeArray = []){
-    const selector = resultCont;
-
-    // Elimina los elementos viejos en caso de que se haga una nueva busqueda en la pestaña search 
-    clearHTML(selector);
-
+async function loadCards(pokeArray = []){
     // Iteramos sobre los datos del json
-    pokeArray.data.results.slice(0,20).forEach(pokemon => {
-            // const name = pokemon.name;
-            // const info = getData(`pokemon/${name}`);
-            const info = getData(pokemon.url, pokeapi=false);
-            info
-                .then(pokemon => {
-                    console.log(pokemon);
-                    createSingleCard(pokemon.data)
-                })
-                .catch(error => error);
-    });
+    for(let pokemon of pokeArray.results){
+        const info = await getData(pokemon.url, false);
+        createSingleCard(info)
+    }
 };
 
 // Función que crea una sola tarjeta de personaje
@@ -139,13 +98,57 @@ function createSingleCard(data = {}){
     charCardBody.appendChild(charHeading);
     charCardBody.appendChild(charTypes);
 
-    charCard.appendChild(charImg);
+    // charCard.appendChild(charImg);
     charCard.appendChild(charCardBody);
 
     charContainer.appendChild(charCard);
 
     resultCont.appendChild(charContainer);
 };
+
+// Consulta el endpoint de la api y carga las tarjetas de los pokemones. Regresa la consulta a la api
+async function loadPokemons(endpoint){
+    let pokemons;
+    try{
+        if(endpoint){
+            pokemons = await getData(endpoint, pokeapi = false);
+            loadCards(pokemons);
+        } else{
+            pokemons = await getData();
+            loadCards(pokemons);
+        }
+    } catch {
+        console.log("No es posible cargar la pagina, contacte a soporte")
+    }
+
+    return pokemons;
+}
+
+// Obtiene los datos del pokemon buscado en la sección de Nombre del Pokemon
+async function searchPokemon(inputValue) {
+    const selector = resultCont;
+    // Elimina los elementos viejos en caso de que se haga una nueva busqueda en la pestaña search 
+    clearHTML(selector);
+
+    let pokemon;
+    let pokemonData ;
+
+    if(!inputValue){
+        pokemonData = await getData();
+    } else{
+        pokemon = inputValue;
+        pokemonData = getData(`pokemon/${pokemon}`);
+    }
+
+    try{
+        loadCards(pokemonData);
+
+    } catch{
+        console.error('Error al cargar la base de datos. Consulte al desarrollador para mas información');
+    }
+
+    return pokemonData;
+}
 
 // Añade las opciones a los selectores de Tipo y de Generación
 function addOptions(optArray = [], selector) {
@@ -160,9 +163,25 @@ function addOptions(optArray = [], selector) {
     };
 };
 
-function capitalize(string){
-    return string.charAt(0).toUpperCase() + string.slice(1)
-}
+async function nextPage(consult){
+    const currentPage = consult;
+    const nextPage = currentPage.next;
+    return nextPage;
+};
+
+
+// async function loadPokemons(currentPage){
+
+//     try {
+//         const pokemonData = await getData(next, false)
+//         loadCards(pokemonData)
+//     }catch{
+//         console.error("error al cargar las tarjetas de información")
+//     }
+
+// };
+
+
 
 // To sort an object by a value or key
 // const maxSpeed = {
@@ -179,9 +198,3 @@ function capitalize(string){
 // );
 
 // console.log(sortable);
-
-function clearHTML (element) {
-    while(element.firstChild) {
-        element.removeChild(element.firstChild)
-    };
-};
