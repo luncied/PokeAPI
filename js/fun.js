@@ -3,14 +3,14 @@ import { api, resultCont } from '../js/var.js';
 import capitalize from '../helpers/capitalize.js';
 import clearHTML from '../helpers/clearHTML.js'
 
-export { searchPokemon, getOptData, loadPokemons, nextPage, getData }
+export { searchPokemon, getOptData, loadPokemons, loadCards }
 
 
 // Optiene los datos del pokemon buscado (parametro endpoint que recibe alguna consulta de la api)
 async function getData(endpoint){
     try{
         if (!endpoint){
-            const response = await fetch("https://pokeapi.co/api/v2/pokemon/?offset=0&limit=50");
+            const response = await fetch("https://pokeapi.co/api/v2/pokemon/?offset=0&limit=1010");
             const result = await response.json()
             return result
         };
@@ -33,15 +33,6 @@ async function getOptData(select, endpoint) {
     addOptions(optArray, selectCont);
 };
 
-// Funcion para cargar las tarjetas 
-async function loadCards(pokeArray = []){
-    // Iteramos sobre los datos del json
-    for(let pokemon of pokeArray.results){
-        const info = await getData(pokemon.url);
-        createSingleCard(info)
-    }
-};
-
 // Función que crea una sola tarjeta de personaje
 function createSingleCard(data = {}){
     const {name, id, height, types, weight} = data;
@@ -49,10 +40,12 @@ function createSingleCard(data = {}){
     const imgShiny = data.sprites.other['official-artwork'].front_shiny;
 
     const charContainer = document.createElement('div');
-    charContainer.classList.add('col', 'mt-3');
+    charContainer.classList.add('col', 'mt-3', 'd-flex', 'justify-content-around');
 
     const charCard = document.createElement('div');
-    charCard.classList.add('card'); 
+    charCard.classList.add('card', 'pokemon-card'); 
+    charCard.setAttribute('id', `${name}`); 
+    charCard.setAttribute('name', `${name}`); 
     charCard.style = "width: 15rem;"
 
     const charImg = document.createElement('img');
@@ -73,16 +66,18 @@ function createSingleCard(data = {}){
     
     const charTypes = document.createElement('div');
     charTypes.classList.add('d-inline', 'input-group', 'justify-content-start', 'py-5');
-    // types.forEach(type => console.log(type))
+
     for(let obj of types){
         const contTypes = document.createElement('span');
         const pokeType = document.createElement('img');
         const typeName = obj.type.name;
         contTypes.classList.add('icon', `${typeName}`, 'badge', 'rounded-pill', 'mx-3');
-        contTypes.style.width = '22%';
-        contTypes.style.height = '12%';
+        contTypes.title = `${capitalize(typeName)}`;
+        contTypes.style.width = '25%';
+        contTypes.style.height = '30%';
         // contTypes.textContent = capitalize(typeName);
         pokeType.classList.add('img-fluid');
+        pokeType.title = `${capitalize(typeName)}`;
         pokeType.src = `./assets/img/types/${typeName}.svg`;
         pokeType.alt = `${typeName}_img`;
         contTypes.appendChild(pokeType);
@@ -94,12 +89,21 @@ function createSingleCard(data = {}){
     charCardBody.appendChild(charHeading);
     charCardBody.appendChild(charTypes);
 
-    // charCard.appendChild(charImg);
+    charCard.appendChild(charImg);
     charCard.appendChild(charCardBody);
 
     charContainer.appendChild(charCard);
 
     resultCont.appendChild(charContainer);
+};
+
+// Funcion para cargar las tarjetas 
+async function loadCards(pokeArray = []){
+    // Iteramos sobre los datos del json
+    for(let pokemon of pokeArray){
+        const info = await getData(pokemon.url);
+        createSingleCard(info);
+    }
 };
 
 // Consulta el endpoint de la api y carga las tarjetas de los pokemones. Regresa la consulta a la api
@@ -108,10 +112,9 @@ async function loadPokemons(endpoint){
     try{
         if(endpoint){
             pokemons = await getData(endpoint);
-            loadCards(pokemons);
         } else{
             pokemons = await getData();
-            loadCards(pokemons);
+            loadCards(pokemons.results.slice(0, 30));
         };
     } catch {
         console.error("No es posible cargar la pagina, contacte a soporte")
@@ -159,28 +162,49 @@ function addOptions(optArray = [], selector) {
     };
 };
 
-async function nextPage(consult){
-    const currentPage = consult;
-    const nextPage = currentPage.next;
-    return nextPage;
-};
-
-let prueba;
-
-// prueba = loadPokemons("https://pokeapi.co/api/v2/pokemon/?offset=20&limit=20");
-// console.log(prueba);
-
-
-// async function loadPokemons(currentPage){
-
-//     try {
-//         const pokemonData = await getData(next, false)
-//         loadCards(pokemonData)
-//     }catch{
-//         console.error("error al cargar las tarjetas de información")
-//     }
-
+// async function nextPage(consult){
+//     const currentPage = consult;
+//     const nextPage = currentPage.next;
+//     return nextPage;
 // };
+
+
+// function createSingleCard(data = {}){
+//     // console.log(data)
+//     const {name, id, height, types, weight} = data;
+//     const imgDef = data.sprites.other['official-artwork'].front_default;
+//     const imgShiny = data.sprites.other['official-artwork'].front_shiny;
+//     let card = `
+//         <div class="col mt-3">
+//             <div class="card" style="width: 15rem">
+//                 <!-- <img src=${imgDef} alt=${name}_img class="card-img-top"> -->
+//                 <div class="card-body">
+//                     <p class="card-subtitle text-secondary-emphasis ts-1 pt-3">
+//                         ID N.° ${id}
+//                     </p>
+//                     <h4 class="card-title p-2">
+//                         ${capitalize(name)}
+//                     </h4>
+//                     <div class="char-types d-inline input-group justify-content-start py-5" id="type${id}"></div>
+//                 </div>
+//             </div>
+//         </div>
+//     `;
+
+//     resultCont.innerHTML+=card;
+//     const charType = document.querySelector(`#type${id}`);
+//     types.forEach(obj => {
+//         const typeName = obj.type.name;
+//         const contTypes = `
+//             <span class="icon ${typeName} badge rouded-pill mx-3" style="width: 22%; height: 12%">
+//                 <img src="./assets/img/types/${typeName}.svg"/ alt="${typeName}_img" class="img-fluid">
+//             </span>
+//         `;
+//         charType.innerHTML += contTypes;
+//     })
+// }
+
+
 
 
 
