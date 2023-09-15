@@ -1,5 +1,5 @@
-import { searchPokemon, getOptData, loadPokemons, loadCards} from "../js/fun.js"
-import { searchForm, resultCont, showMoreBtn, cards } from "../js/var.js"
+import { searchPokemon, getOptData, loadPokemons, loadCards } from "../js/fun.js"
+import { searchForm, resultCont, showMoreBtn, } from "../js/var.js"
 import clearHTML from '../helpers/clearHTML.js';
 
 let pokemons;
@@ -23,19 +23,20 @@ showMoreBtn.addEventListener('click', async (e) => {
 
     try {
         if(countPages < Math.ceil(pages/30)){
-            loadCards(pokemons.results.slice((countPages*30), ((countPages+1)*30)))
-            countPages++
+            loadCards(pokemons.results.slice((countPages*30), ((countPages+1)*30)));
+            countPages++;
         } else {
             clearHTML(showMoreBtn.parentElement);
             console.log("ultima pagina");
         }
     } catch {
-        console.error("Error al cargar el resto de tarjetas, contactar a soporte")
+        console.error("Error al cargar el resto de tarjetas, contactar a soporte");
     }
 });
 
 searchForm.elements["poke-name"].addEventListener('keyup', () => {
     const pokemon = searchForm.elements["poke-name"].value;
+    searchPokemon();
     console.log(pokemon);
 
 })
@@ -46,10 +47,8 @@ searchForm.elements["poke-id"].addEventListener('keyup', () => {
 
 })
 
-console.log(cards)
-// for(let i = 0; i < cards.length; i++){
-//     console.log(cards[i])
-// };
+
+
 
 
 // searchForm.elements["search-btn"].addEventListener('click', (e) => {

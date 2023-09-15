@@ -5,7 +5,6 @@ import clearHTML from '../helpers/clearHTML.js'
 
 export { searchPokemon, getOptData, loadPokemons, loadCards }
 
-
 // Optiene los datos del pokemon buscado (parametro endpoint que recibe alguna consulta de la api)
 async function getData(endpoint){
     try{
@@ -23,16 +22,6 @@ async function getData(endpoint){
 
 };
 
-// Obtiene los datos para generar las opciones en los selects
-async function getOptData(select, endpoint) {
-    const selectCont = select ; // elemento del contenedor formulario
-
-    const response = await fetch(api + endpoint);
-    const result = await response.json();
-    const optArray = result.results;
-    addOptions(optArray, selectCont);
-};
-
 // Función que crea una sola tarjeta de personaje
 function createSingleCard(data = {}){
     const {name, id, height, types, weight} = data;
@@ -46,6 +35,9 @@ function createSingleCard(data = {}){
     charCard.classList.add('card', 'pokemon-card'); 
     charCard.setAttribute('id', `${name}`); 
     charCard.setAttribute('name', `${name}`); 
+    charCard.addEventListener('click', (e) => {
+        modalShowInformation(data);
+    })
     charCard.style = "width: 15rem;"
 
     const charImg = document.createElement('img');
@@ -89,7 +81,7 @@ function createSingleCard(data = {}){
     charCardBody.appendChild(charHeading);
     charCardBody.appendChild(charTypes);
 
-    charCard.appendChild(charImg);
+    // charCard.appendChild(charImg);
     charCard.appendChild(charCardBody);
 
     charContainer.appendChild(charCard);
@@ -123,34 +115,18 @@ async function loadPokemons(endpoint){
     return pokemons;
 }
 
-// Obtiene los datos del pokemon buscado en la sección de Nombre del Pokemon
-async function searchPokemon(inputValue) {
-    const selector = resultCont;
-    // Elimina los elementos viejos en caso de que se haga una nueva busqueda en la pestaña search 
-    clearHTML(selector);
+// Obtiene los datos para generar las opciones en los selects
+async function getOptData(select, endpoint){
+    const selectCont = select ; // elemento del contenedor formulario
 
-    let pokemon;
-    let pokemonData ;
-
-    if(!inputValue){
-        pokemonData = await getData();
-    } else{
-        pokemon = inputValue;
-        pokemonData = getData(api + `pokemon/${pokemon}`);
-    }
-
-    try{
-        loadCards(pokemonData);
-
-    } catch{
-        console.error('Error al cargar la base de datos. Consulte al desarrollador para mas información');
-    }
-
-    return pokemonData;
-}
+    const response = await fetch(api + endpoint);
+    const result = await response.json();
+    const optArray = result.results;
+    addOptions(optArray, selectCont);
+};
 
 // Añade las opciones a los selectores de Tipo y de Generación
-function addOptions(optArray = [], selector) {
+function addOptions(optArray = [], selector){
     /*
         selector : Contenedor del formulario
     */
@@ -161,6 +137,43 @@ function addOptions(optArray = [], selector) {
         selector.appendChild(option);
     };
 };
+
+function modalShowInformation(data){
+    console.log(data);
+}
+
+// Obtiene los datos del pokemon buscado en la sección de Nombre del Pokemon
+async function searchPokemon(){
+    const selector = resultCont;
+    const lastCard = resultCont.lastChild.firstChild;
+    console.log(selector)
+    // Elimina los elementos viejos en caso de que se haga una nueva busqueda en la pestaña search 
+    // clearHTML(selector);
+
+    // if(inputValue){
+    //     try{
+
+    //     } catch{
+
+    //     }
+    // }
+
+    // try{
+    //     loadCards(pokemonData);
+
+    // } catch{
+    //     console.error('Error al cargar la base de datos. Consulte al desarrollador para mas información');
+    // }
+
+    // return pokemonData;
+}
+
+
+// // Actualiza la selección de las cards de cada pokemon
+// async function updateCardSelector(){
+//     let cards = await waitForElm('#pokedex-result-container').childNodes;
+//     return cards;
+// };
 
 // async function nextPage(consult){
 //     const currentPage = consult;
