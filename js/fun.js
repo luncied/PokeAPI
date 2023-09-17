@@ -1,5 +1,5 @@
 // import axios from 'axios';
-import { api, resultCont } from '../js/var.js';
+import { api, resultCont, modal } from '../js/var.js';
 import capitalize from '../helpers/capitalize.js';
 import clearHTML from '../helpers/clearHTML.js'
 
@@ -24,9 +24,8 @@ async function getData(endpoint){
 
 // Función que crea una sola tarjeta de personaje
 function createSingleCard(data = {}){
-    const {name, id, height, types, weight} = data;
+    const {name, id, types} = data;
     const imgDef = data.sprites.other['official-artwork'].front_default;
-    const imgShiny = data.sprites.other['official-artwork'].front_shiny;
 
     const charContainer = document.createElement('div');
     charContainer.classList.add('col', 'mt-3', 'd-flex', 'justify-content-around');
@@ -35,15 +34,18 @@ function createSingleCard(data = {}){
     charCard.classList.add('card', 'pokemon-card'); 
     charCard.setAttribute('id', `${name}`); 
     charCard.setAttribute('name', `${name}`); 
-    charCard.addEventListener('click', (e) => {
-        modalShowInformation(data);
-    })
-    charCard.style = "width: 15rem;"
+    charCard.style = "width: 15rem";
 
     const charImg = document.createElement('img');
     charImg.classList.add('card-img-top');
     charImg.alt = `${name}_img`;
     charImg.src = imgDef;
+    charImg.style = "cursor: pointer";
+    charImg.dataset.bsTarget = "#modal";
+    charImg.dataset.bsToggle = "modal";
+    charImg.addEventListener('click', () => {
+        modalShowInformation(data);
+    })
 
     const charCardBody = document.createElement('div'); 
     charCardBody.classList.add('card-body');
@@ -55,11 +57,18 @@ function createSingleCard(data = {}){
     const charHeading = document.createElement('h4');
     charHeading.classList.add('card-title', 'p-2');
     charHeading.textContent = capitalize(name);
+    charHeading.style = "cursor: pointer";
+    charHeading.dataset.bsTarget = "#modal";
+    charHeading.dataset.bsToggle = "modal";
+    charHeading.addEventListener('click', () => {
+        modalShowInformation(data);
+    })
+
     
     const charTypes = document.createElement('div');
-    charTypes.classList.add('d-inline', 'input-group', 'justify-content-start', 'py-5');
+    charTypes.classList.add('d-inline', 'input-group', 'justify-content-start', 'py-3');
 
-    for(let obj of types){
+    types.forEach(obj => {
         const contTypes = document.createElement('span');
         const pokeType = document.createElement('img');
         const typeName = obj.type.name;
@@ -74,14 +83,14 @@ function createSingleCard(data = {}){
         pokeType.alt = `${typeName}_img`;
         contTypes.appendChild(pokeType);
         charTypes.appendChild(contTypes);
-    }
-    // ordenar html
+    });
 
+    // ordenar html
     charCardBody.appendChild(charID);
     charCardBody.appendChild(charHeading);
     charCardBody.appendChild(charTypes);
 
-    // charCard.appendChild(charImg);
+    charCard.appendChild(charImg);
     charCard.appendChild(charCardBody);
 
     charContainer.appendChild(charCard);
@@ -92,10 +101,13 @@ function createSingleCard(data = {}){
 // Funcion para cargar las tarjetas 
 async function loadCards(pokeArray = []){
     // Iteramos sobre los datos del json
-    for(let pokemon of pokeArray){
-        const info = await getData(pokemon.url);
-        createSingleCard(info);
-    }
+    var pokeArr = await Promise.all(pokeArray.map(async pokemon => {
+        return await getData(pokemon.url);
+    }));
+    
+    pokeArr = sortArrByObjProp(pokeArr);
+
+    pokeArr.forEach(pokemon => createSingleCard(pokemon));
 };
 
 // Consulta el endpoint de la api y carga las tarjetas de los pokemones. Regresa la consulta a la api
@@ -139,7 +151,34 @@ function addOptions(optArray = [], selector){
 };
 
 function modalShowInformation(data){
-    console.log(data);
+    const {name, id, height, types, weight} = data;
+    const imgDef = data.sprites.other['official-artwork'].front_default;
+    const imgShiny = data.sprites.other['official-artwork'].front_shiny;
+    
+    const header = modal.children[0];
+    const body = modal.children[1];
+    
+    clearHTML(header);
+    clearHTML(body);
+
+    const title = document.createElement('h3');
+    title.textContent = capitalize(name);
+
+    const closeBtn = document.createElement('buton');
+    closeBtn.type = "button";
+    closeBtn.classList.add('btn-close');
+    closeBtn.setAttribute('data-bs-dismiss', 'modal');
+    closeBtn.style= "cursor: pointer";
+
+    header.appendChild(title);
+    header.appendChild(closeBtn);
+
+    const imgCont = document.createElement('img');
+    imgCont.classList.add('img-fluid');
+    imgCont.src = imgDef;
+    imgCont.alt = `${name}-img`;
+
+    body.appendChild(imgCont);
 }
 
 // Obtiene los datos del pokemon buscado en la sección de Nombre del Pokemon
@@ -168,6 +207,18 @@ async function searchPokemon(){
     // return pokemonData;
 }
 
+function sortArrByObjProp(array, prop){
+    array.sort((a, b) => {
+        if (a[prop] > b[prop]){
+            return 1;
+        }
+        if (a[prop] < b[prop]){
+            return -1;
+        }
+        return 0
+    });
+    return array
+};
 
 // // Actualiza la selección de las cards de cada pokemon
 // async function updateCardSelector(){

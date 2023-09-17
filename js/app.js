@@ -27,7 +27,6 @@ showMoreBtn.addEventListener('click', async (e) => {
             countPages++;
         } else {
             clearHTML(showMoreBtn.parentElement);
-            console.log("ultima pagina");
         }
     } catch {
         console.error("Error al cargar el resto de tarjetas, contactar a soporte");
