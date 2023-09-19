@@ -28,19 +28,18 @@ function createSingleCard(data = {}){
     const imgDef = data.sprites.other['official-artwork'].front_default;
 
     const charContainer = document.createElement('div');
-    charContainer.classList.add('col', 'mt-3', 'd-flex', 'justify-content-around');
+    charContainer.classList.add('col', 'mt-3', 'd-flex', 'justify-content-center');
 
     const charCard = document.createElement('div');
     charCard.classList.add('card', 'pokemon-card'); 
     charCard.setAttribute('id', `${name}`); 
     charCard.setAttribute('name', `${name}`); 
-    charCard.style = "width: 15rem";
+    charCard.style = "width: 15rem"; 
 
     const charImg = document.createElement('img');
-    charImg.classList.add('card-img-top');
+    charImg.classList.add('card-img-top', 'pointer');
     charImg.alt = `${name}_img`;
     charImg.src = imgDef;
-    charImg.style = "cursor: pointer";
     charImg.dataset.bsTarget = "#modal";
     charImg.dataset.bsToggle = "modal";
     charImg.addEventListener('click', () => {
@@ -54,10 +53,9 @@ function createSingleCard(data = {}){
     charID.classList.add('card-subtitle','text-secondary-emphasis', 'ts-1', 'pt-3');
     charID.textContent = `ID N.° ${id}`;
 
-    const charHeading = document.createElement('h4');
-    charHeading.classList.add('card-title', 'p-2');
+    const charHeading = document.createElement('h3');
+    charHeading.classList.add('card-title', 'p-2', 'pointer');
     charHeading.textContent = capitalize(name);
-    charHeading.style = "cursor: pointer";
     charHeading.dataset.bsTarget = "#modal";
     charHeading.dataset.bsToggle = "modal";
     charHeading.addEventListener('click', () => {
@@ -72,7 +70,7 @@ function createSingleCard(data = {}){
         const contTypes = document.createElement('span');
         const pokeType = document.createElement('img');
         const typeName = obj.type.name;
-        contTypes.classList.add('icon', `${typeName}`, 'badge', 'rounded-pill', 'mx-3');
+        contTypes.classList.add('icon', `${typeName}`, 'badge', 'type-badge', 'rounded-pill', 'mx-3');
         contTypes.title = `${capitalize(typeName)}`;
         contTypes.style.width = '25%';
         contTypes.style.height = '30%';
@@ -105,7 +103,7 @@ async function loadCards(pokeArray = []){
         return await getData(pokemon.url);
     }));
     
-    pokeArr = sortArrByObjProp(pokeArr);
+    pokeArr = sortArrByObjProp(pokeArr, "id");
 
     pokeArr.forEach(pokemon => createSingleCard(pokemon));
 };
@@ -150,62 +148,114 @@ function addOptions(optArray = [], selector){
     };
 };
 
-function modalShowInformation(data){
+async function modalShowInformation(data){
+    clearHTML(modal);
     const {name, id, height, types, weight} = data;
     const imgDef = data.sprites.other['official-artwork'].front_default;
     const imgShiny = data.sprites.other['official-artwork'].front_shiny;
+    // const speciesURL = data.species.url;
+    // const evol = await getData(speciesURL);
+    // const evolChain = await getData(evol.evolution_chain.url);
+    // console.log(evolChain.chain.evolves_to)
     
-    const header = modal.children[0];
-    const body = modal.children[1];
+    const modalBody = `
+        <div class="modal-content d-flex" id="modal-pokemon-info">
+            <div class="modal-header justify-content-center">
+                <h3 class="">${capitalize(name)}</h3>
+                <button class="btn-close pointer" type="button" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-md-7">
+                            <h5>ID: N° ${id}</h5>
+                            <div id="carrousel-def-shiny" class="carousel slide carousel-fade carousel-dark" data-bs-ride="carousel">
+                                <div class="carousel-indicators">
+                                    <button type="button" data-bs-target="#carrousel-def-shiny" data-bs-slide-to="0"
+                                        class="active" aria-current="true" aria-label="Default form">Default</button>
+                                    <button type="button" data-bs-target="#carrousel-def-shiny" data-bs-slide-to="1"
+                                        aria-label="Shiny form">Shiny</button>
+                                </div>
+                                <div class="carousel-inner">
+                                    <div class="carousel-item active">
+                                        <img src="${imgDef}" alt="${name}-img" class="img-fluid col-10">
+                                    </div>
+                                    <div class="carousel-item">
+                                        <img src="${imgShiny}" alt="${name}-shiny-img" class="img-fluid col-10">
+                                    </div>
+                                </div>
+                                <button class="carousel-control-prev" type="button" data-bs-target="#carrousel-def-shiny"
+                                    data-bs-slide="prev">
+                                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                    <span class="visually-hidden">Anterior</span>
+                                </button>
+                                <button class="carousel-control-next" type="button" data-bs-target="#carrousel-def-shiny"
+                                    data-bs-slide="next">
+                                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                    <span class="visually-hidden">Siguiente</span>
+                                </button>
+                            </div>
+
+                        </div>
+                        <div class="col-md-5">
+                            <p>Tipo: ${
+                                types.length == 2 ? types.reduce((a,b) => capitalize(a.type.name) + ", " +
+                                capitalize(b.type.name)) : capitalize(types[0].type.name)
+                                }</p>
+                            <p>Altura promedio: ${height}</p>
+                            <p>Peso promedio: ${weight}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer justify-content-start">
+                <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
     
-    clearHTML(header);
-    clearHTML(body);
+    `
+    modal.innerHTML = modalBody;
 
-    const title = document.createElement('h3');
-    title.textContent = capitalize(name);
+    // const header = modal.children[0];
+    // const body = modal.children[1];
+    
+    // clearHTML(header);
+    // clearHTML(body);
 
-    const closeBtn = document.createElement('buton');
-    closeBtn.type = "button";
-    closeBtn.classList.add('btn-close');
-    closeBtn.setAttribute('data-bs-dismiss', 'modal');
-    closeBtn.style= "cursor: pointer";
+    // const title = document.createElement('h3');
+    // title.textContent = capitalize(name);
 
-    header.appendChild(title);
-    header.appendChild(closeBtn);
+    // const closeBtn = document.createElement('buton');
+    // closeBtn.type = "button";
+    // closeBtn.classList.add('btn-close');
+    // closeBtn.setAttribute('data-bs-dismiss', 'modal');
+    // closeBtn.style= "cursor: pointer";
 
-    const imgCont = document.createElement('img');
-    imgCont.classList.add('img-fluid');
-    imgCont.src = imgDef;
-    imgCont.alt = `${name}-img`;
+    // header.appendChild(title);
+    // header.appendChild(closeBtn);
 
-    body.appendChild(imgCont);
+    // const imgCont = document.createElement('img');
+    // imgCont.classList.add('img-fluid');
+    // imgCont.src = imgDef;
+    // imgCont.alt = `${name}-img`;
+
+    // body.appendChild(imgCont);
 }
 
 // Obtiene los datos del pokemon buscado en la sección de Nombre del Pokemon
-async function searchPokemon(){
-    const selector = resultCont;
-    const lastCard = resultCont.lastChild.firstChild;
-    console.log(selector)
-    // Elimina los elementos viejos en caso de que se haga una nueva busqueda en la pestaña search 
-    // clearHTML(selector);
-
-    // if(inputValue){
-    //     try{
-
-    //     } catch{
-
-    //     }
-    // }
-
-    // try{
-    //     loadCards(pokemonData);
-
-    // } catch{
-    //     console.error('Error al cargar la base de datos. Consulte al desarrollador para mas información');
-    // }
-
-    // return pokemonData;
-}
+function searchPokemon(data, input){
+    try{
+        var conincidences = data.results.map(pokemon => {
+            if (pokemon.name.includes(input.toLowerCase())) {
+                return pokemon;
+            }
+            return;
+        }).filter(Boolean);
+        return conincidences
+    } catch {
+        console.error("Busqueda no encontrada");
+    };
+};
 
 function sortArrByObjProp(array, prop){
     array.sort((a, b) => {

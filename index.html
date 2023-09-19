@@ -6,9 +6,10 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>The Unofficial Pokemon API </title>
-    <link rel="stylesheet" href="./assets/bootstrapV5.3/bootstrap-5.3.0-alpha3-dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="./assets/css-spinner/dist/entries/dual-ring/index.min.css">
+    <link rel="stylesheet" href="./css/style.css">
     <link rel="stylesheet" href="./assets/img/types/style.css">
+    <link rel="stylesheet" href="./assets/bootstrapV5.3/bootstrap-5.3.0-alpha3-dist/css/bootstrap.min.css">
+
 </head>
 
 <body>
@@ -18,7 +19,7 @@
     <!--  -->
     <!-- Dynamic search -->
     <!--  -->
-    <div name="poke-search" class="section-page poke-search justify-content-center container-md mt-5">
+    <div name="poke-search" class="section-page poke-search justify-content-center container-lg mt-5">
         <!-- Form -->
         <form class="poke-search-form p-5 row justify-content-center border-0 border-opacity-75 rounded-4 
             shadow bg-body-tertiary rounded" id="poke-search-form">
@@ -30,9 +31,6 @@
                 </div>
             </div>
             <!-- Name -->
-            <p class="text-center pt-3">
-                Busqueda básica
-            </p>
             <div class="row justify-content-center">
                 <div class="col-12 col-xl-4 col-md-6 mt-1">
                     <label for="poke-name" class="form-label">Nombre del Pokemon</label>
@@ -42,6 +40,7 @@
                             aria-describedby="name-span">
                     </div>
                 </div>
+                <!-- 
                 <div class="col-12 col-xl-4 col-md-6 mt-1">
                     <label for="poke-id" class="form-label">ID en Pokedex</label>
                     <div class="mb-3 input-group">
@@ -49,18 +48,20 @@
                         <input type="text" class="form-control" id="poke-id" name="poke-id" placeholder="ID"
                             aria-describedby="name-span">
                     </div>
-                </div>
+                </div> 
+                -->
+
             </div>
             <div class="col-12">
                 <div class="mb-3 d-flex justify-content-center">
                     <button class="btn btn-primary shadow" id="search-btn" name="search-btn">Buscar</button>
                 </div>
             </div>
-            <p class="text-center pt-3">
+            <!-- <p class="text-center pt-3">
                 Busqueda avanzada
             </p>
-            <!-- Genre -->
-            <!-- <div class="row justify-content-center">
+
+            <div class="row justify-content-center">
                 <div class="col-12 col-xl-4 col-md-6 mt-1">
                     <label class="form-label" for="poke-type">Tipo de pokemon</label>
                     <div class="input-group mb-3">
@@ -69,8 +70,8 @@
                             <option selected>Tipo...</option>
                         </select>
                     </div>
-                </div>-->
-            <!-- Rol --><!--
+                </div>
+
                 <div class="col-12 col-xl-4 col-md-6 mt-1">
                     <label class="form-label" for="poke-gen">Generación</label>
                     <div class="input-group mb-3">
@@ -81,14 +82,13 @@
 
                     </div>
                 </div>
-            </div> -->
-
+            </div>
 
             <div class="col-12">
                 <div class="mb-3 d-flex justify-content-center">
                     <button class="btn btn-primary shadow" id="advanced-search-btn">Busqueda Avanzada</button>
                 </div>
-            </div>
+            </div> -->
         </form>
     </div>
 
@@ -104,27 +104,19 @@
                 <h2 class="">Pokedex</h2>
             </div>
             <div class="justify-content-center row mt-5">
-                <div class="col-10 container text-center mt-5">
-                    <div class="col row" id="pokedex-result-container">
-                    </div>
-                </div>
-            </div>
-            <!-- Modal desplazable centrado verticalmente -->
-            <div class="modal fade" tabindex="-1" id="modal">
-                <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-                    <div class="modal-content" id="modal-pokemon-info">
-                        <div class="modal-header">
-                        </div>
-                        <div class="modal-body">
-                        </div>
-                        <div class="modal-footer justify-content-start">
-                            <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal">Cerrar</button>
-                        </div>
+                <div class="col-12 container text-center mt-5 d-flex">
+                    <div class="row justify-content-center" id="pokedex-result-container">
                     </div>
                 </div>
             </div>
 
-            <div class="d-flex justify-content-center">
+            <!-- Modal desplazable centrado verticalmente -->
+            <div class="modal fade" tabindex="-1" id="modal">
+                <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" id="modal-container">
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-center" id="show-more-btn-container">
                 <button name="show-more-btn" class="show-more-btn btn btn-outline-primary shadow p-2 mt-5 w-100"
                     id="show-more-btn">Mostrar más</button>
             </div>
@@ -138,22 +130,3 @@
 </body>
 
 </html>
-
-
-<!-- <div class="col mt-3">
-    <div class="card" style="width: 15rem">
-        <img src=${imgDef} alt=${name}_img class="card-img-top">
-        <div class="card-body">
-            <p class="card-subtitle text-secondary-emphasis ts-1 pt-3">
-                ID N.° ${id}
-            </p>
-            <h4 class="card-title p-2">
-                ${capitalize(name)}
-            </h4>
-            <div class="char-types d-inline input-group justify-content-start py-5">
-                <span class="icon ${typeName} badge rounded-pill mx-3"></span>
-                <></>
-            </div>
-        </div>
-    </div>
-</div> -->

@@ -24,37 +24,34 @@ showMoreBtn.addEventListener('click', async (e) => {
     try {
         if(countPages < Math.ceil(pages/30)){
             loadCards(pokemons.results.slice((countPages*30), ((countPages+1)*30)));
+            showMoreBtn.classList.remove("disabled");
             countPages++;
         } else {
-            clearHTML(showMoreBtn.parentElement);
+            showMoreBtn.classList.add("disabled");
         }
     } catch {
         console.error("Error al cargar el resto de tarjetas, contactar a soporte");
     }
 });
 
-searchForm.elements["poke-name"].addEventListener('keyup', () => {
-    const pokemon = searchForm.elements["poke-name"].value;
-    searchPokemon();
-    console.log(pokemon);
+searchForm.elements["search-btn"].addEventListener('click', async (e) => {
+    e.preventDefault();
+    try{
+        const pokemon = searchForm.elements["poke-name"].value;
+        const searchedPokemons = searchPokemon(pokemons, pokemon);
 
-})
+        clearHTML(resultCont);
+        if(!pokemon){
+            clearHTML(resultCont);
+            await loadCards(pokemons.results.slice(0, 30));
+            showMoreBtn.classList.remove("disabled");
+        } else {
+            await loadCards(searchedPokemons);
+            showMoreBtn.classList.add("disabled");
+        };
 
-searchForm.elements["poke-id"].addEventListener('keyup', () => {
-    const pokemon = searchForm.elements["poke-id"].value;
-    console.log(pokemon);
+    } catch {
+        console.error("Contacte a soporte");
+    }
 
-})
-
-
-
-
-
-// searchForm.elements["search-btn"].addEventListener('click', (e) => {
-//     e.preventDefault();
-//     const pokemon = searchForm.elements["poke-name"].value;
-//     pokemon ? searchPokemon(pokemon) : console.error('Ingrese un nombre de pokemon valido');
-// });
-
-
-
+});
